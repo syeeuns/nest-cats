@@ -7,6 +7,7 @@ import { CatsController } from './cats/cats.controller';
 import { CatsService } from './cats/cats.service';
 import { CatsModule } from './cats/cats.module';
 import { AuthModule } from './auth/auth.module';
+import { CommentsModule } from './comments/comments.module';
 import * as mongoose from 'mongoose';
 
 @Module({
@@ -18,6 +19,7 @@ import * as mongoose from 'mongoose';
     }),
     CatsModule,
     AuthModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
