@@ -1,4 +1,3 @@
-import { multerOptions } from './../common/utils/multer.uptions';
 import { JwtAuthGuard } from './../auth/jwt/jwt.guard';
 import { LoginRequestDto } from './../auth/dto/login.request.dto';
 import { AuthService } from './../auth/auth.service';
@@ -33,14 +32,14 @@ export class CatsController {
 
     @Post('/upload')
     @UseGuards(JwtAuthGuard)
-    @UseInterceptors(FilesInterceptor('files', 10, multerOptions('cats')))
+    @UseInterceptors(FilesInterceptor('files', 10))
     uploadCatImgs(@UploadedFiles() files: Array<Express.Multer.File>, @CurrentUser() cat) {
         return this.catsService.uploadImg(cat, files);
     }
 
     @UseGuards(JwtAuthGuard)
     @Get('/all')
-    getAllCats(@CurrentUser() cat) {
+    getAllCats() {
         return this.catsService.getAllCats();
     }
 }

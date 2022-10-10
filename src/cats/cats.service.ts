@@ -1,3 +1,4 @@
+import { AwsService } from './../aws.service';
 import { CatsRepository } from './cats.repository';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -9,7 +10,10 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class CatsService {
     
-    constructor(private readonly catsRepository: CatsRepository) {}
+    constructor(
+        private readonly catsRepository: CatsRepository,
+        private readonly awsService: AwsService
+    ) {}
     
     async signUp(body: CatRequestDto) {
         const {email, name, password} = body;
@@ -25,12 +29,16 @@ export class CatsService {
     }
 
     async uploadImg(cat: Cat, files: Express.Multer.File[]) {
-        const fileName = `cats/${files[0].filename}`;
-        const newCat = await this.catsRepository.findByIdAndUpdateImg(cat.id, fileName);
+        const folderName = 'cats'
+        const file = files[0];
+        const {key, s3Object, contentType} = await this.awsService.uploadFileToS3(folderName, file);
+        const imageUrl = await this.awsService.getAwsS3FileUrl(key);
+        const newCat = await this.catsRepository.findByIdAndUpdateImg(cat.id, imageUrl);
         return newCat.readOnlyData;
     }
 
     async getAllCats() {
-        return await this.catsRepository.findAll();
+        const allCats = await this.catsRepository.findAll();
+        return allCats.map((cat) => cat.readOnlyData);
     }
 }

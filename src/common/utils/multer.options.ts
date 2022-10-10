@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 
+// s3 사용하면서 multerOptions사용하지 않음
 const createFolder = (folder: string) => {
   try {
     console.log('💾 Create a root uploads folder...');
@@ -42,7 +43,7 @@ const storage = (folder: string): multer.StorageEngine => {
 
 export const multerOptions = (folder: string) => {
   const result: MulterOptions = {
-    storage: storage(folder),
+    storage: multer.memoryStorage(),
   };
   return result;
 };

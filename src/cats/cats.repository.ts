@@ -1,3 +1,5 @@
+import { CommentSchema } from './../comments/comments.schema';
+import { model, Types } from 'mongoose';
 import { CatRequestDto } from './dto/cats.request.dto';
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,9 +12,8 @@ export class CatsRepository {
     constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
     
     async findAll() {
-        const cats = await this.catModel.find();
-        const readOnlyCats = cats.map((cat) => cat.readOnlyData);
-        return readOnlyCats;
+        const CommentModel = model('comments', CommentSchema);
+        return await this.catModel.find().populate('comments', CommentModel);
     }
 
     async findByEmail(email: string): Promise<Cat | null> {
@@ -20,7 +21,7 @@ export class CatsRepository {
         return cat;
     }
     
-  async findByIdWithoutPassword(id: string): Promise<Cat | null> {
+  async findByIdWithoutPassword(id: string | Types.ObjectId): Promise<Cat | null> {
       const cat = await this.catModel.findById(id).select('-password');
       return cat;
     }
@@ -35,9 +36,9 @@ export class CatsRepository {
         return result;
     }
 
-    async findByIdAndUpdateImg(id: any, fileName: string): Promise<Cat> {
+    async findByIdAndUpdateImg(id: any, imangeUrl: string): Promise<Cat> {
         const cat = await this.catModel.findById(id);
-        cat.imageUrl = `http://localhost:3000/media/${fileName}`;
+        cat.imageUrl = imangeUrl;
         return cat.save();
     }
 }

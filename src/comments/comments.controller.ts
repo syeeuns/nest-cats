@@ -1,5 +1,5 @@
 import { CommentsService } from './comments.service';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { CommentsCreateDto } from './dto/comments.create.dto';
 
 @Controller('comments')
@@ -21,7 +21,7 @@ export class CommentsController {
         return this.commentsService.createComment(id, body);
     }
 
-    @Post(':id')
+    @Patch('/like/:id')
     plusLike(@Param('id') id: string) {
         return this.commentsService.plusLike(id);
     }
